@@ -42,7 +42,7 @@ docker-compose restart
 
 ## Display Format
 
-![Guest WiFi Display](./guest-wifi-display.png)
+![Guest WiFi Display](./board-display.png)
 
 When enabled, the board will show:
 
