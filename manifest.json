@@ -48,14 +48,25 @@
     }
   ],
   "variables": {
-    "simple": [
-      "ssid",
-      "password"
-    ]
-  },
-  "max_lengths": {
-    "ssid": 22,
-    "password": 22
+    "groups": {
+      "credentials": { "label": "WiFi Credentials" }
+    },
+    "simple": {
+      "ssid": {
+        "description": "Guest WiFi network name (SSID)",
+        "type": "string",
+        "max_length": 22,
+        "group": "credentials",
+        "example": "MyGuestNetwork"
+      },
+      "password": {
+        "description": "Guest WiFi password",
+        "type": "string",
+        "max_length": 22,
+        "group": "credentials",
+        "example": "welcome123"
+      }
+    }
   },
   "fiestaboard_version": ">=2.10.0"
 }
