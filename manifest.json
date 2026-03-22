@@ -49,7 +49,9 @@
   ],
   "variables": {
     "groups": {
-      "credentials": { "label": "WiFi Credentials" }
+      "credentials": {
+        "label": "WiFi Credentials"
+      }
     },
     "simple": {
       "ssid": {
@@ -68,5 +70,13 @@
       }
     }
   },
-  "fiestaboard_version": ">=2.10.0"
+  "fiestaboard_version": ">=2.10.0",
+  "screenshots": [
+    {
+      "src": "docs/board-display.png",
+      "alt": "Guest WiFi displayed on a Vestaboard",
+      "caption": "Display guest WiFi credentials on your board",
+      "primary": true
+    }
+  ]
 }
