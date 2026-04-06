@@ -1,7 +1,7 @@
 {
   "id": "guest_wifi",
   "name": "Guest WiFi",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Display guest WiFi credentials on your board",
   "author": "FiestaBoard Team",
   "repository": "https://github.com/Fiestaboard/fiestaboard-plugin--guest-wifi",
@@ -78,5 +78,43 @@
       "caption": "Display guest WiFi credentials on your board",
       "primary": true
     }
-  ]
+  ],
+  "demo": {
+    "name": "Guest WiFi Demo",
+    "device_type": "flagship",
+    "template": [
+      "",
+      "Guest WiFi",
+      "{{guest_wifi.ssid}}",
+      "{{guest_wifi.password}}",
+      "",
+      ""
+    ],
+    "line_metadata": [
+      {
+        "alignment": "center",
+        "wrap": false
+      },
+      {
+        "alignment": "center",
+        "wrap": false
+      },
+      {
+        "alignment": "center",
+        "wrap": false
+      },
+      {
+        "alignment": "center",
+        "wrap": false
+      },
+      {
+        "alignment": "center",
+        "wrap": false
+      },
+      {
+        "alignment": "center",
+        "wrap": false
+      }
+    ]
+  }
 }
