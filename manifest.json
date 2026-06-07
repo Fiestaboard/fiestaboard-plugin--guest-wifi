@@ -1,13 +1,14 @@
 {
   "id": "guest_wifi",
   "name": "Guest WiFi",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Display guest WiFi credentials on your board",
   "author": "FiestaBoard Team",
   "repository": "https://github.com/Fiestaboard/fiestaboard-plugin--guest-wifi",
   "documentation": "README.md",
   "icon": "wifi",
   "category": "utility",
+  "min_refresh_seconds": 60,
   "settings_schema": {
     "type": "object",
     "properties": {
@@ -15,6 +16,14 @@
         "type": "boolean",
         "title": "Enable Guest WiFi",
         "default": false
+      },
+      "refresh_seconds": {
+        "type": "integer",
+        "title": "Refresh Interval (seconds)",
+        "description": "How often to refresh the displayed credentials (rarely needs to change)",
+        "default": 3600,
+        "minimum": 60,
+        "maximum": 86400
       },
       "ssid": {
         "type": "string",
