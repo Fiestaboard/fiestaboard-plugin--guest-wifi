@@ -104,7 +104,7 @@
     {
       "device_type": "note",
       "rows": [
-        "GUEST WIFI",
+        "{67}{67} GUEST WIFI",
         "MyGuestNetwork",
         "welcome123"
       ]
