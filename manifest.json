@@ -88,6 +88,28 @@
       "primary": true
     }
   ],
+  "teaser": "GUEST WIFI INFO",
+  "previews": [
+    {
+      "device_type": "flagship",
+      "rows": [
+        "{66}{66}{66}{66}{66}{66}{66}{66}{66}{66}{66}{66}{66}{66}{66}{66}{66}{66}{66}{66}{66}{66}",
+        "     WIFI NETWORK",
+        "    ALOHA-GUEST-5G",
+        "",
+        "       PASSWORD",
+        "      MAHALO2026"
+      ]
+    },
+    {
+      "device_type": "note",
+      "rows": [
+        "{67}{67} GUEST WIFI",
+        "MyGuestNetwork",
+        "welcome123"
+      ]
+    }
+  ],
   "demo": {
     "flagship": {
       "name": "Guest WiFi Demo",
