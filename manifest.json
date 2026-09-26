@@ -1,7 +1,7 @@
 {
   "id": "guest_wifi",
   "name": "Guest WiFi",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "Display guest WiFi credentials on your board",
   "author": "FiestaBoard Team",
   "repository": "https://github.com/Fiestaboard/fiestaboard-plugin--guest-wifi",
@@ -28,14 +28,14 @@
       "ssid": {
         "type": "string",
         "title": "Network Name (SSID)",
-        "description": "Your guest WiFi network name",
-        "maxLength": 22
+        "description": "Your guest WiFi network name (max 15 characters, so it always fits on a Note)",
+        "maxLength": 15
       },
       "password": {
         "type": "string",
         "title": "Password",
-        "description": "Your guest WiFi password",
-        "maxLength": 22,
+        "description": "Your guest WiFi password (max 15 characters, so it always fits on a Note)",
+        "maxLength": 15,
         "ui:widget": "password"
       }
     },
@@ -66,18 +66,22 @@
       "ssid": {
         "description": "Guest WiFi network name (SSID)",
         "type": "string",
-        "max_length": 22,
+        "max_length": 15,
         "group": "credentials",
         "example": "MyGuestNetwork"
       },
       "password": {
         "description": "Guest WiFi password",
         "type": "string",
-        "max_length": 22,
+        "max_length": 15,
         "group": "credentials",
         "example": "welcome123"
       }
     }
+  },
+  "max_lengths": {
+    "ssid": 15,
+    "password": 15
   },
   "fiestaboard_version": ">=2.10.0",
   "screenshots": [
@@ -107,6 +111,17 @@
         "{67}{67} GUEST WIFI",
         "MyGuestNetwork",
         "welcome123"
+      ]
+    },
+    {
+      "label": "Note Array (2 wide)",
+      "device_type": "note_array",
+      "notes_wide": 2,
+      "notes_tall": 1,
+      "rows": [
+        "        WIFI NETWORK",
+        "        ALOHA-GUEST-5G",
+        "        MAHALO2026"
       ]
     }
   ],

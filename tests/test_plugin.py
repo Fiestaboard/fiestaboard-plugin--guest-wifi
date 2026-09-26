@@ -5,6 +5,9 @@ import pytest
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
+from src.devices import BoardContext
+from src.text_to_board import count_tiles
+
 from plugins.guest_wifi import GuestWifiPlugin
 
 
@@ -30,8 +33,8 @@ class TestGuestWifiPlugin:
     def test_ssid_formatting(self):
         """Test SSID is properly formatted for display."""
         ssid = "MyGuestWiFi"
-        # SSID should not exceed board line width (22 chars)
-        assert len(ssid) <= 22
+        # SSID should not exceed the narrowest board's width (15 chars, a Note)
+        assert len(ssid) <= 15
     
     def test_password_formatting(self):
         """Test password is properly formatted for display."""
@@ -102,16 +105,20 @@ class TestGuestWifiPluginIntegration:
         assert "Password is required" in errors
 
     def test_validate_config_ssid_too_long(self, plugin):
-        """Test validate_config returns error when SSID exceeds 22 chars."""
-        config = {"ssid": "a" * 23, "password": "test"}
+        """Test validate_config returns error when SSID exceeds 15 chars.
+
+        15 is the narrowest board width (a Note) -- an SSID declared longer
+        than that could never render on a Note without wrapping or clipping.
+        """
+        config = {"ssid": "a" * 16, "password": "test"}
         errors = plugin.validate_config(config)
-        assert "SSID must be 22 characters or less" in errors
+        assert "SSID must be 15 characters or less" in errors
 
     def test_validate_config_password_too_long(self, plugin):
-        """Test validate_config returns error when password exceeds 22 chars."""
-        config = {"ssid": "Network", "password": "p" * 23}
+        """Test validate_config returns error when password exceeds 15 chars."""
+        config = {"ssid": "Network", "password": "p" * 16}
         errors = plugin.validate_config(config)
-        assert "Password must be 22 characters or less" in errors
+        assert "Password must be 15 characters or less" in errors
 
     def test_validate_config_valid(self, plugin):
         """Test validate_config accepts valid config."""
@@ -120,8 +127,8 @@ class TestGuestWifiPluginIntegration:
         assert len(errors) == 0
 
     def test_validate_config_ssid_at_limit(self, plugin):
-        """Test validate_config accepts SSID at 22 char limit."""
-        config = {"ssid": "a" * 22, "password": "test"}
+        """Test validate_config accepts SSID at 15 char limit (a full Note row)."""
+        config = {"ssid": "a" * 15, "password": "test"}
         errors = plugin.validate_config(config)
         assert len(errors) == 0
 
@@ -167,6 +174,78 @@ class TestGuestWifiPluginIntegration:
         assert "MyWiFi" in str(lines)
         assert "Secret123" in str(lines)
 
+    def test_get_formatted_display_on_note_does_not_truncate_credentials(self, plugin):
+        """Regression test for the clipping bug: full SSID/password on a Note.
+
+        Before the fix, `f"NETWORK: {ssid}"[:22]` clipped anything past 22
+        characters -- and even well under that, the label alone pushed a
+        15-char SSID off the edge of a Note's 15-column line. A silently
+        truncated WiFi password is unusable, so the fix must never chop
+        either value, no matter how narrow the board.
+        """
+        ssid = "ALOHA-GUEST-5G"  # 14 chars -- at the edge of a Note's width
+        password = "MAHALO2026"
+        plugin.config = {"ssid": ssid, "password": password}
+        note = BoardContext(device_type="note", rows=3, cols=15)
+
+        with plugin._bound_board(note):
+            lines = plugin.get_formatted_display()
+
+        assert lines is not None
+        assert len(lines) <= note.rows
+        for line in lines:
+            assert count_tiles(line) <= note.cols
+        # The full, untruncated values must appear as their own line(s) --
+        # not clipped, not merged unreadably with a label.
+        assert ssid in lines
+        assert password in lines
+
+    def test_get_formatted_display_wide_board_keeps_labels_inline(self, plugin):
+        """On a roomy board, short credentials keep the readable inline labels."""
+        plugin.config = {"ssid": "MyWiFi", "password": "Secret123"}
+        flagship = BoardContext(device_type="flagship", rows=6, cols=22)
+
+        with plugin._bound_board(flagship):
+            lines = plugin.get_formatted_display()
+
+        assert lines is not None
+        assert any("NETWORK: MyWiFi" in line for line in lines)
+        assert any("PASSWORD: Secret123" in line for line in lines)
+
+    def test_get_formatted_display_wraps_legacy_oversized_credential(self, plugin):
+        """A pre-fix config saved before the 15-char cap must wrap, not clip.
+
+        validate_config() now rejects credentials over 15 chars, but a value
+        saved under the old 22-char limit still lives in some users' stored
+        config. Rendering it on a narrower board must never lose characters.
+        """
+        long_password = "MahaloGuestNetwork22"  # 20 chars, predates the cap
+        plugin.config = {"ssid": "Guest", "password": long_password}
+        note = BoardContext(device_type="note", rows=3, cols=15)
+
+        with plugin._bound_board(note):
+            lines = plugin.get_formatted_display()
+
+        assert lines is not None
+        assert len(lines) <= note.rows
+        for line in lines:
+            assert count_tiles(line) <= note.cols
+        # Every character of the oversized password must survive, split
+        # across however many lines it takes -- none of it is dropped.
+        assert lines[0] == "Guest"
+        assert "".join(lines[1:]) == long_password
+
+    def test_get_formatted_display_falls_back_on_impossibly_short_board(self, plugin):
+        """A board shorter than any candidate layout still returns, not crashes."""
+        plugin.config = {"ssid": "Guest", "password": "pw"}
+        tiny = BoardContext(device_type="note_array", rows=1, cols=15)
+
+        with plugin._bound_board(tiny):
+            lines = plugin.get_formatted_display()
+
+        assert lines is not None
+        assert len(lines) <= tiny.rows
+
 
 class TestGuestWifiDisplay:
     """Tests for Guest WiFi display formatting."""
@@ -189,7 +268,7 @@ class TestGuestWifiDisplay:
     
     def test_line_length_constraint(self):
         """Test that all content fits within line length."""
-        max_chars = 22  # Board line width
+        max_chars = 15  # Narrowest board line width (a Note)
         
         ssid = "TestNetwork"
         password = "Pass123"
