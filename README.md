@@ -40,8 +40,8 @@ PASSWORD: {{guest_wifi.password}}
 | Setting | Type | Required | Description |
 |---------|------|----------|-------------|
 | enabled | boolean | No | Enable/disable the plugin |
-| ssid | string | Yes | Your guest WiFi network name (max 22 chars) |
-| password | string | Yes | Your guest WiFi password (max 22 chars) |
+| ssid | string | Yes | Your guest WiFi network name (max 15 chars, so it fits every board) |
+| password | string | Yes | Your guest WiFi password (max 15 chars, so it fits every board) |
 
 ## Security Note
 
